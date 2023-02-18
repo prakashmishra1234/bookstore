@@ -28,18 +28,40 @@ exports.registerUser = catchAsyncError(async (req, res, next) => {
 });
 
 // Login User
-exports.loginUser = catchAsyncError(async (req, res, next) => {});
+exports.loginUser = catchAsyncError(async (req, res, next) => {
+  let { password, Username } = req.body;
+  if (password && Username) {
+    console.log(Username, password);
+    const existingUser = await User.findOne({ where: { Username } });
 
-exports.verifyemail = catchAsyncError(async (req, res, next) => {});
+    if (!existingUser) return next(new ErrorHandler("user may not exist", 404));
+    const isPasswordMatched = await bcrypt.compare(
+      password,
+      existingUser.password
+    );
+    if (!isPasswordMatched)
+      return next(new ErrorHandler("Username or passowrd is in correct", 404));
+    res.status(200).send({
+      success: true,
+      message: "User logged in successfully",
+      data: existingUser,
+    });
+  } else {
+    res.status(404).json({
+      success: "false",
+      message: "Please enter username and password",
+      data: null,
+    });
+  }
+});
 
 exports.getUser = catchAsyncError(async (req, res, next) => {
   const { Username } = req.body;
   const userData = await User.findOne({ where: { Username } });
-  if (userData) {
-    res
-      .status(200)
-      .json({ success: true, message: "User found", data: userData });
-  } else {
-    return next(new ErrorHandler("User not found", 404));
-  }
+  if (!userData) return next(new ErrorHandler("User not found", 404));
+  res.status(200).send({
+    success: true,
+    message: "User found",
+    data: userData,
+  });
 });
