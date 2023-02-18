@@ -29,7 +29,7 @@ exports.registerUser = catchAsyncError(async (req, res, next) => {
 
 // Login User
 exports.loginUser = catchAsyncError(async (req, res, next) => {
-  let { password, Username } = req.body;
+  const { password, Username } = req.body;
   if (password && Username) {
     console.log(Username, password);
     const existingUser = await User.findOne({ where: { Username } });
@@ -41,10 +41,21 @@ exports.loginUser = catchAsyncError(async (req, res, next) => {
     );
     if (!isPasswordMatched)
       return next(new ErrorHandler("Username or passowrd is in correct", 404));
+
+    const { id, Email } = existingUser;
+
+    const dataToBeSent = {
+      id: id,
+      Username: Username,
+      Email: Email,
+    };
+    const token = jwt.sign(dataToBeSent, process.env.SECRET_KEY, {
+      expiresIn: 60 * 60,
+    });
     res.status(200).send({
       success: true,
       message: "User logged in successfully",
-      data: existingUser,
+      data: token,
     });
   } else {
     res.status(404).json({
