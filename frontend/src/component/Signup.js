@@ -7,33 +7,14 @@ import { Box } from "@mui/system";
 import instance from "../api/Instance";
 import { useNavigate } from "react-router-dom";
 
-const Login = () => {
+const Signup = () => {
   const [userLoginData, setUserLoginData] = React.useState({
     Username: "",
     password: "",
+    Firstname: "",
   });
   const navigate = useNavigate();
-  const onClickLogin = () => {
-    if (userLoginData.Username && userLoginData.password) {
-      instance
-        .post("user/login", userLoginData)
-        .then((res) => {
-          console.log(res);
-          localStorage.setItem(
-            "user_data_bookstore",
-            JSON.stringify({
-              token: res,
-            })
-          );
-          navigate("/home");
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    } else {
-      alert("Username and password is required");
-    }
-  };
+  const onClickSignup = () => {};
   return (
     <div className="d-flex justify-content-center align-items-center h-100">
       <Box
@@ -41,10 +22,10 @@ const Login = () => {
           boxShadow: 6,
           width: 400,
           height: "100%",
-          border: "1px solid grey",
-          borderRadius: "10px",
           display: "flex",
           alignItems: "center",
+          border: "1px solid grey",
+          borderRadius: "10px",
           // backgroundColor: "#fff",
           "&:hover": {
             backgroundColor: "primary.main",
@@ -69,7 +50,7 @@ const Login = () => {
               <Typography
                 style={{ fontSize: "24px", fontWeight: "700", color: "#fff" }}
               >
-                Welcome Back
+                Welcome
               </Typography>
             </Box>
           </Grid>
@@ -82,6 +63,17 @@ const Login = () => {
                 });
               }}
               placeholder="Username"
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Input
+              onChange={(e) => {
+                setUserLoginData({
+                  ...userLoginData,
+                  Firstname: e.target.value,
+                });
+              }}
+              placeholder="Firstname"
             />
           </Grid>
           <Grid item xs={12}>
@@ -102,22 +94,22 @@ const Login = () => {
                 padding: "12px",
               }}
             >
-              <Typography style={{ cursor: "pointer", color: "#fff" }}>
+              <Typography style={{ color: "#fff", cursor: "pointer" }}>
                 Forget Password
               </Typography>
             </Box>
           </Grid>
           <Grid item xs={12}>
-            <Button style={{ width: "320px" }} onClick={onClickLogin}>
-              Login
+            <Button style={{ width: "320px" }} onClick={onClickSignup}>
+              Register
             </Button>
           </Grid>
           <Grid item xs={12}>
             <Button
               style={{ width: "320px" }}
-              onClick={() => navigate("/register")}
+              onClick={() => navigate("/login")}
             >
-              Dont have account register
+              Already registered login
             </Button>
           </Grid>
         </Grid>
@@ -126,4 +118,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Signup;
